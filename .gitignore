@@ -1,0 +1,10 @@
+## important ignores here
+
+## random ignores here
+
+#ignote compiled files
+*.pyc
+
+# ignore weird cache files
+
+*~
