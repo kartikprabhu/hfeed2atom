@@ -11,7 +11,7 @@ ID_TEMPLATE = Template('<id>${uid}</id>')
 
 AUTHOR_TEMPLATE = Template('<author><name>${name}</name></author>')
 
-FEATURED_TEMPLATE = Template('&lt;img src="${featured}"/&gt;/>')
+FEATURED_TEMPLATE = Template('&lt;img src="${featured}"/&gt;')
 
 POST_SUMMARY_TEMPLATE = Template('&lt;p&gt;${post_summary}&lt;/p&gt;')
 
@@ -125,25 +125,6 @@ def entry2atom(entry_mf):
 
 	return ENTRY_TEMPLATE.substitute(entry)
 
-def hfeed2mf(doc=None, url=None):
-	"""
-	get the dictionary object first h-feed of a document
-
-	Args:
-		doc (file or string or BeautifulSoup doc): file handle, text of content
-        to parse, or BeautifulSoup document to look for h-feed
-
-	Return: a python dictionary representation of the first h-feed in this document or None if no h-feed found.
-	"""
-
-	parsed = mf2py.Parser(doc, url).to_dict()
-
-	try:
-		feed = next(x for x in parsed['items'] if 'h-feed' in x['type'])
-		return feed
-	except (KeyError, StopIteration):
-		return 's'
-
 
 def hfeed2atom(doc=None, url=None):
 	"""
@@ -156,8 +137,10 @@ def hfeed2atom(doc=None, url=None):
 	Return: an Atom 1.0 XML document version of the first h-feed in the document or None if no h-feed found
 	"""
 
+	# parse for microformats
 	parsed = mf2py.Parser(doc, url).to_dict()
 
+	# find first h-feed object if any or None
 	try:
 		mf = next(x for x in parsed['items'] if 'h-feed' in x['type'])
 	except (KeyError, StopIteration):
@@ -171,7 +154,7 @@ def hfeed2atom(doc=None, url=None):
 
 	props = mf['properties']
 
-	# entries sroted by updated/published in reverse-chronology
+	# entries sorted by updated/published in reverse-chronology
 	entries = sorted([x for x in mf['children'] if 'h-entry' in x['type']], key = lambda x: updated_or_published(x), reverse=True)
 
 	# construct title for feed
