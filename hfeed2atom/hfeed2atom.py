@@ -21,7 +21,7 @@ SUMMARY_TEMPLATE = Template('<summary type="html">${featured}${summary}${morelin
 
 CATEGORY_TEMPLATE = Template('<category term="${category}"></category>')
 
-ENTRY_TEMPLATE = Template('<entry>${title}${link}${uid}${published}${updated}{$summary}${categories}</entry>')
+ENTRY_TEMPLATE = Template('<entry>${title}${link}${uid}${published}${updated}${summary}${categories}</entry>')
 
 FEED_TEMPLATE = Template('<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en-us">${title}${subtitle}${link}${uid}${updated}${author}${entries}</feed>')
 
@@ -46,6 +46,26 @@ def updated_or_published(mf):
 	else:
 		return None
 
+def get_id(mf):
+	"""
+	get the uid of the mf object
+
+	Args:
+		mf: python dictionary of some object
+
+	Return: string containing the uid property, or the url property or None
+
+	"""
+
+	props =  mf['properties']
+
+	if 'uid' in props:
+		return props['uid'][0]
+	elif 'url' in props:
+		return props['url'][0]
+	else:
+		return None
+
 
 def entry2atom(entry_mf):
 	"""
@@ -66,14 +86,13 @@ def entry2atom(entry_mf):
 	# construct title of entry
 	entry['title'] = TITLE_TEMPLATE.substitute(title = props['name'][0], t_type='title')
 
-	# construct link of entry
-	if 'uid' in props:
-		entry['link'] = LINK_TEMPLATE.substitute(url = props['uid'][0], rel='alternate')
-	elif 'url' in props:
-		entry['link'] = LINK_TEMPLATE.substitute(url = props['url'][0], rel='alternate')
+	# construct link/id of entry
+	uid = get_id(entry_mf)
+
+	entry['link'] = LINK_TEMPLATE.substitute(url = uid, rel='alternate')
 
 	# construct id of entry
-	entry['uid'] = ID_TEMPLATE.substitute(uid=entry['link'])
+	entry['uid'] = ID_TEMPLATE.substitute(uid = uid)
 
 	# construct published date of entry
 	entry['published'] = DATE_TEMPLATE.substitute(date = props['published'][0], dt_type = 'published')
@@ -160,14 +179,12 @@ def hfeed2atom(doc=None, url=None):
 	# construct subtitle for feed
 	feed['subtitle'] = TITLE_TEMPLATE.substitute(title = props['additional-name'][0], t_type='subtitle')
 
-	# construct link of feed
-	if 'uid' in props:
-		feed['link'] = LINK_TEMPLATE.substitute(url = props['uid'][0], rel='alternate')
-	elif 'url' in props:
-		feed['link'] = LINK_TEMPLATE.substitute(url = props['url'][0], rel='alternate')
+	uid = get_id(mf)
+
+	feed['link'] = LINK_TEMPLATE.substitute(url = uid, rel='alternate')
 
 	# construct id of feed
-	feed['uid'] = ID_TEMPLATE.substitute(uid = feed['link'])
+	feed['uid'] = ID_TEMPLATE.substitute(uid = uid)
 
 	# construct updated for feed or use updated of first post in entries
 	feed['updated'] = DATE_TEMPLATE.substitute(date = updated_or_published(mf) or updated_or_published(entries[0]), dt_type='updated' )
