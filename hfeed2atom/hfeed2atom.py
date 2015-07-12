@@ -84,7 +84,8 @@ def entry2atom(entry_mf):
 	entry = {'title':'', 'link':'', 'uid':'', 'published':'', 'updated':'', 'summary':'', 'categories':''}
 
 	# construct title of entry
-	entry['title'] = TITLE_TEMPLATE.substitute(title = props['name'][0], t_type='title')
+	name = props['name'][0]
+	entry['title'] = TITLE_TEMPLATE.substitute(title = name, t_type='title')
 
 	# construct link/id of entry
 	uid = get_id(entry_mf)
@@ -111,7 +112,7 @@ def entry2atom(entry_mf):
 	if 'summary' in props:
 		summary = POST_SUMMARY_TEMPLATE.substitute(post_summary = props['summary'][0])
 
-	morelink =  MORELINK_TEMPLATE.substitute(url = entry['link'], name = entry['title'])
+	morelink =  MORELINK_TEMPLATE.substitute(url = uid, name = name)
 
 	entry['summary'] = SUMMARY_TEMPLATE.substitute(featured=featured, summary=summary, morelink=morelink)
 
