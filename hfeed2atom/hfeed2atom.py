@@ -1,6 +1,8 @@
 import mf2py
 from string import Template
 
+from xml.sax.saxutils import escape
+
 TITLE_TEMPLATE = Template('<${t_type}>${title}</${t_type}>')
 
 LINK_TEMPLATE = Template('<link href="${url}" rel="${rel}"></link>')
@@ -84,11 +86,11 @@ def entry2atom(entry_mf):
 	entry = {'title':'', 'link':'', 'uid':'', 'published':'', 'updated':'', 'summary':'', 'categories':''}
 
 	# construct title of entry
-	name = props['name'][0]
+	name = escape(props['name'][0])
 	entry['title'] = TITLE_TEMPLATE.substitute(title = name, t_type='title')
 
 	# construct link/id of entry
-	uid = get_id(entry_mf)
+	uid = escape(get_id(entry_mf))
 
 	entry['link'] = LINK_TEMPLATE.substitute(url = uid, rel='alternate')
 
@@ -96,10 +98,10 @@ def entry2atom(entry_mf):
 	entry['uid'] = ID_TEMPLATE.substitute(uid = uid)
 
 	# construct published date of entry
-	entry['published'] = DATE_TEMPLATE.substitute(date = props['published'][0], dt_type = 'published')
+	entry['published'] = DATE_TEMPLATE.substitute(date = escape(props['published'][0]), dt_type = 'published')
 
 	# construct updated/published date of entry
-	updated = updated_or_published(entry_mf)
+	updated = escape(updated_or_published(entry_mf))
 
 	if updated is not None :
 		entry['updated'] = DATE_TEMPLATE.substitute(date = updated, dt_type = 'updated')
@@ -107,10 +109,10 @@ def entry2atom(entry_mf):
 	# construct summary of entry
 
 	if 'featured' in props:
-		featured = FEATURED_TEMPLATE.substitute(featured = props['featured'][0])
+		featured = FEATURED_TEMPLATE.substitute(featured = escape(props['featured'][0]))
 
 	if 'summary' in props:
-		summary = POST_SUMMARY_TEMPLATE.substitute(post_summary = props['summary'][0])
+		summary = POST_SUMMARY_TEMPLATE.substitute(post_summary = escape(props['summary'][0]))
 
 	morelink =  MORELINK_TEMPLATE.substitute(url = uid, name = name)
 
@@ -119,7 +121,7 @@ def entry2atom(entry_mf):
 	# construct category list of entry
 	if 'category' in props:
 		for category in props['category']:
-			entry['categories'] += CATEGORY_TEMPLATE.substitute(category=category)
+			entry['categories'] += CATEGORY_TEMPLATE.substitute(category=escape(category))
 
 	# construct atom of entry
 
@@ -158,12 +160,12 @@ def hfeed2atom(doc=None, url=None):
 	entries = sorted([x for x in mf['children'] if 'h-entry' in x['type']], key = lambda x: updated_or_published(x), reverse=True)
 
 	# construct title for feed
-	feed['title'] = TITLE_TEMPLATE.substitute(title = props['name'][0], t_type='title')
+	feed['title'] = TITLE_TEMPLATE.substitute(title = escape(props['name'][0]), t_type='title')
 
 	# construct subtitle for feed
-	feed['subtitle'] = TITLE_TEMPLATE.substitute(title = props['additional-name'][0], t_type='subtitle')
+	feed['subtitle'] = TITLE_TEMPLATE.substitute(title = escape(props['additional-name'][0]), t_type='subtitle')
 
-	uid = get_id(mf)
+	uid = escape(get_id(mf))
 
 	feed['link'] = LINK_TEMPLATE.substitute(url = uid, rel='alternate')
 
@@ -171,10 +173,10 @@ def hfeed2atom(doc=None, url=None):
 	feed['uid'] = ID_TEMPLATE.substitute(uid = uid)
 
 	# construct updated for feed or use updated of first post in entries
-	feed['updated'] = DATE_TEMPLATE.substitute(date = updated_or_published(mf) or updated_or_published(entries[0]), dt_type='updated' )
+	feed['updated'] = DATE_TEMPLATE.substitute(date = escape(updated_or_published(mf) or updated_or_published(entries[0])), dt_type='updated' )
 
 	# construct author for feed
-	author = AUTHOR_TEMPLATE.substitute(name = props['author'][0]['properties']['name'][0])
+	author = AUTHOR_TEMPLATE.substitute(name = escape(props['author'][0]['properties']['name'][0]))
 
 	# construct entries for feed
 	for entry in entries:
