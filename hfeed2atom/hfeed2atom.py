@@ -252,7 +252,7 @@ def hfeed2atom(doc=None, url=None):
 		# construct entry template  - skip entry if error
 		entry_atom, message = hentry2atom(entry)
 		if entry_atom:
-			feed['entries'] += hentry2atom(entry)
+			feed['entries'] += entry_atom
 
 	feed['generator'] = GENERATOR
 
