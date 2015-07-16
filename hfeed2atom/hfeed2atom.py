@@ -102,7 +102,7 @@ def hentry2atom(entry_mf):
 		name = props['name'][0]
 		entry['title'] = TITLE_TEMPLATE.substitute(title = escape(name), t_type='title')
 	else:
-		return None 'title for entry not found'
+		return None, 'title for entry not found'
 
 	# construct id of entry
 	uid = _get_id(entry_mf)
