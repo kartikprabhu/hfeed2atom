@@ -98,8 +98,11 @@ def hentry2atom(entry_mf):
 	## required properties first
 
 	# construct title of entry -- required - add default
-	name = props['name'][0]
-	entry['title'] = TITLE_TEMPLATE.substitute(title = escape(name), t_type='title')
+	if 'name' in props:
+		name = props['name'][0]
+		entry['title'] = TITLE_TEMPLATE.substitute(title = escape(name), t_type='title')
+	else:
+		return None 'title for entry not found'
 
 	# construct id of entry
 	uid = _get_id(entry_mf)
@@ -206,10 +209,8 @@ def hfeed2atom(doc=None, url=None):
 	#construct title for feed -- required
 	if 'name' in props:
 		feed['title'] = TITLE_TEMPLATE.substitute(title = escape(props['name'][0]), t_type='title')
-	elif url:
-		feed['title'] = 'Feed for ' + url
 	else:
-		feed['title'] = 'Feed'
+		return None, 'title for feed not found'
 
 	uid = _get_id(mf)
 
