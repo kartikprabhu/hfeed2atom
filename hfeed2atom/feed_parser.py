@@ -30,7 +30,7 @@ def feed_parser(doc=None, url=None):
 			hfeed['properties']['uid'] = url
 
 		# construct categories from meta-keywords
-		keywords = doc.find('meta', name='keywords', content=True)['content']
+		keywords = doc.find('meta', attrs= {'name': 'keywords', 'content': True})['content']
 		if keywords:
 			hfeed['properties']['category'] = keywords.split(',')
 
