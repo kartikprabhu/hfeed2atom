@@ -158,6 +158,8 @@ def hentry2atom(entry_mf):
 	# make morelink if content does not exist
 	if not content:
 		morelink =  MORELINK_TEMPLATE.substitute(url = escape(uid), name = escape(name))
+	else:
+		morelink = ''
 
 	entry['summary'] = SUMMARY_TEMPLATE.substitute(featured=featured, summary=summary, morelink=morelink)
 
