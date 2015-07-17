@@ -1,9 +1,7 @@
-import mf2py
+from xml.sax.saxutils import escape
 from string import Template
 
-from xml.sax.saxutils import escape
-
-from . import about
+from . import about, feed_parser
 
 GENERATOR = Template('<generator uri="${uri}" version="${version}">${name}</generator>').substitute(uri = about.URL['self'], version = '.'.join(map(str, about.VERSION[0:3])) + ''.join(about.VERSION[3:]), name = about.NAME )
 
@@ -93,7 +91,7 @@ def hentry2atom(entry_mf):
 	else:
 		return None, 'properties of entry not found.'
 
-	entry = {'title' : '', 'subtitle' : '', 'link' : '', 'uid' : '', 'published' : '', 'updated' : '', 'summary' : '', 'content' : '',  'categories' : ''}
+	entry = {'title': '', 'subtitle': '', 'link': '', 'uid': '', 'published': '', 'updated': '', 'summary': '', 'content': '',  'categories': ''}
 
 	## required properties first
 
@@ -172,7 +170,7 @@ def hentry2atom(entry_mf):
 	return ENTRY_TEMPLATE.substitute(entry), 'up and Atom!'
 
 
-def hfeed2atom(doc=None, url=None):
+def hfeed2atom(doc=None, url=None, hfeed=None):
 	"""
 	convert first h-feed object in a document to Atom 1.0
 
@@ -183,21 +181,17 @@ def hfeed2atom(doc=None, url=None):
 
 	Return: an Atom 1.0 XML document version of the first h-feed in the document or None if no h-feed found, and string with reason for error
 	"""
+	# if hfeed object given assume it is well formatted
+	if hfeed:
+		mf = hfeed
+	else:
+		# send to hfeed_parser to parse
+		mf = feed_parser.feed_parser(doc, url)
 
-	# parse for microformats
-	parsed = mf2py.Parser(doc, url).to_dict()
+		if not mf:
+			return None, 'h-feed not found'
 
-	# find first h-feed object if any or None
-	try:
-		mf = next(x for x in parsed['items'] if 'h-feed' in x['type'])
-	except (KeyError, StopIteration):
-		mf = None
-		pass
-
-	if not mf:
-		return None, 'h-feed not found'
-
-	feed = {'generator' : '', 'title' : '', 'subtitle' : '', 'link' : '', 'uid' : '', 'updated' : '', 'author' : '', 'entries' : ''}
+	feed = {'generator': '', 'title': '', 'subtitle': '', 'link': '', 'uid': '', 'updated': '', 'author': '', 'entries': ''}
 
 	if 'properties' in mf:
 		props = mf['properties']
@@ -212,7 +206,7 @@ def hfeed2atom(doc=None, url=None):
 	else:
 		return None, 'title for feed not found'
 
-	uid = _get_id(mf)
+	uid = _get_id(mf) or url
 
 	# id is -- required
 	if uid:
