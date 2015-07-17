@@ -27,7 +27,7 @@ CONTENT_TEMPLATE = Template('<content type="html">${content}</content>')
 
 CATEGORY_TEMPLATE = Template('<category term="${category}"></category>')
 
-ENTRY_TEMPLATE = Template('<entry>${title}${subtitle}${link}${uid}${published}${updated}${summary}${categories}</entry>')
+ENTRY_TEMPLATE = Template('<entry>${title}${subtitle}${link}${uid}${published}${updated}${summary}${content}${categories}</entry>')
 
 FEED_TEMPLATE = Template('<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en-us">${generator}${title}${subtitle}${link}${uid}${updated}${author}${entries}</feed>')
 
