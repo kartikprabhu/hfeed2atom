@@ -33,15 +33,15 @@ def feed_parser(doc=None, url=None):
 		hfeed = {'type': ['h-feed'], 'properties': {}, 'children': []}
 
 		# construct name from title
-		title = doc.find('title')
-		if title:
-			hfeed['properties']['name'] = [title.get_text()]
+		feed_title = doc.find('title')
+		if feed_title:
+			hfeed['properties']['name'] = [feed_title.get_text()]
 
 		# construct author from rep_hcard or meta-author
 
 		# construct uid from url
 		if url:
-			hfeed['properties']['uid'] = url
+			hfeed['properties']['uid'] = [url]
 
 		# construct categories from meta-keywords
 		keywords = doc.find('meta', attrs= {'name': 'keywords', 'content': True})
