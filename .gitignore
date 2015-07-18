@@ -2,8 +2,9 @@
 
 ## random ignores here
 
-#ignote compiled files
+#ignote compiled files and eggs
 *.pyc
+*.egg-info
 
 # ignore weird cache files
 
