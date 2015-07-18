@@ -23,35 +23,46 @@ def feed_parser(doc=None, url=None):
 			else:
 				doc = BeautifulSoup(data.content)
 
-	# parse for microformats
-	parsed = mf2py.Parser(doc, url).to_dict()
-
 	# find first h-feed object if any or construct it
-	try:
-		hfeed = next(x for x in parsed['items'] if 'h-feed' in x.get('type', []))
-	except (KeyError, StopIteration):
+
+	hfeed = doc.find(class_="h-feed")
+
+	if hfeed:
+		hfeed = mf2py.Parser(hfeed, url).to_dict()['items'][0]
+	else:
 		hfeed = {'type': ['h-feed'], 'properties': {}, 'children': []}
 
-		# construct name from title
+		# parse whole document for microformats
+		parsed = mf2py.Parser(doc, url).to_dict()
+
+		# construct h-entries from top-level items
+		hfeed['children'] = [x for x in parsed['items'] if 'h-entry' in x.get('type', [])]
+
+
+	# construct fall back properties for hfeed
+
+	props = hfeed['properties']
+
+	# if no name construct name from title or default from URL
+	if 'name' not in props:
 		feed_title = doc.find('title')
 		if feed_title:
 			hfeed['properties']['name'] = [feed_title.get_text()]
+		elif url:
+			hfeed['properties']['name'] = ['Feed for' + url]
 
-		# construct author from rep_hcard or meta-author
+	# construct author from rep_hcard or meta-author
 
-		# construct uid from url
+	# construct uid from url
+	if 'uid' not in props and 'url' not in props:
 		if url:
 			hfeed['properties']['uid'] = [url]
 
-		# construct categories from meta-keywords
+	# construct categories from meta-keywords
+	if 'category' not in props:
 		keywords = doc.find('meta', attrs= {'name': 'keywords', 'content': True})
 		if keywords:
 			hfeed['properties']['category'] = keywords.get('content', '').split(',')
 
-		# construct entries
-		hfeed['children'] = [x for x in parsed['items'] if 'h-entry' in x.get('type', [])]
-
-		pass
 
 	return hfeed
-

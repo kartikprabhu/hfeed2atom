@@ -218,7 +218,10 @@ def hfeed2atom(doc=None, url=None, hfeed=None):
 		return None, 'feed does not have a valid id'
 
 	# entries
-	entries = [x for x in mf['children'] if 'h-entry' in x['type']]
+	if 'children' in mf:
+		entries = [x for x in mf['children'] if 'h-entry' in x['type']]
+	else:
+		entries = []
 
 	# construct updated/published date of feed.
 	updated = _updated_or_published(mf)
