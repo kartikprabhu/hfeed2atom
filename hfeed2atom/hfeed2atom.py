@@ -166,6 +166,12 @@ def hentry2atom(entry_mf):
 	# construct category list of entry
 	if 'category' in props:
 		for category in props['category']:
+			if isinstance(category, dict):
+				if  'value' in category:
+					category = category['value']
+				else:
+					continue
+
 			entry['categories'] += CATEGORY_TEMPLATE.substitute(category=escape(category))
 
 	# construct atom of entry
