@@ -1,7 +1,9 @@
-import mf2py
+import requests
 from bs4 import BeautifulSoup
 
-import requests
+import mf2py
+from mf2util import util
+
 
 
 def feed_parser(doc=None, url=None):
@@ -43,8 +45,18 @@ def feed_parser(doc=None, url=None):
 
 	props = hfeed['properties']
 
-	# if no name construct name from title or default from URL
-	if 'name' not in props:
+	# if no name or name is the content value, construct name from title or default from URL
+	name = props.get('name')
+	if name:
+		name = name[0]
+
+	content = props.get('content')
+	if content:
+		content = content[0]
+		if isinstance(content, dict):
+			content = content.get('value')
+
+	if not name or not util.is_name_a_title(name, content):
 		feed_title = doc.find('title')
 		if feed_title:
 			hfeed['properties']['name'] = [feed_title.get_text()]
