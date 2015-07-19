@@ -96,9 +96,23 @@ def hentry2atom(entry_mf):
 	## required properties first
 
 	# construct title of entry -- required - add default
-	if 'name' in props:
-		name = props['name'][0]
+	# if no name or name is the content value, construct name from title or default from URL
+	name = props.get('name')
+	if name:
+		name = name[0]
+
+	content = props.get('content')
+	if content:
+		content = content[0]
+		if isinstance(content, dict):
+			content = content.get('value')
+
+	if name:
+		if not util.is_name_a_title(name, content):
+			name = name[:30] + '...'
+
 		entry['title'] = TITLE_TEMPLATE.substitute(title = escape(name), t_type='title')
+
 	else:
 		return None, 'title for entry not found'
 
