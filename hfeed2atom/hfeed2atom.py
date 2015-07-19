@@ -3,6 +3,8 @@ from string import Template
 
 from . import about, feed_parser
 
+from mf2util import util
+
 GENERATOR = Template('<generator uri="${uri}" version="${version}">${name}</generator>').substitute(uri = about.URL['self'], version = '.'.join(map(str, about.VERSION[0:3])) + ''.join(about.VERSION[3:]), name = about.NAME )
 
 TITLE_TEMPLATE = Template('<${t_type}>${title}</${t_type}>')
@@ -109,7 +111,7 @@ def hentry2atom(entry_mf):
 
 	if name:
 		if not util.is_name_a_title(name, content):
-			name = name[:30] + '...'
+			name = name[:50] + '...'
 
 		entry['title'] = TITLE_TEMPLATE.substitute(title = escape(name), t_type='title')
 
@@ -146,7 +148,7 @@ def hentry2atom(entry_mf):
 	if 'additional-name' in props:
 		feed['subtitle'] = TITLE_TEMPLATE.substitute(title = escape(props['additional-name'][0]), t_type='subtitle')
 
-	# add content processing
+	# content processing
 	if 'content' in props:
 		if isinstance(props['content'][0], dict):
 			content = props['content'][0]['html']
