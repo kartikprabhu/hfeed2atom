@@ -3,8 +3,6 @@
 
 from setuptools import setup, find_packages
 
-from hfeed2atom import about
-
 # use requirements.txt for dependencies
 with open('requirements.txt') as f:
     required = map(lambda s: s.strip(), f.readlines())
@@ -16,14 +14,14 @@ with open('LICENSE') as f:
     license = f.read()
 
 setup(
-    name=about.NAME,
-    version='.'.join(map(str, about.VERSION[0:3])) + ''.join(about.VERSION[3:]),
-    description=about.SUMMARY,
+    name='hfeed2atom',
+    version='0.2.0',
+    description='h-feed to Atom converter',
     long_description=readme,
     install_requires=required,
-    author=about.AUTHOR['name'],
-    author_email=about.AUTHOR['contact'],
-    url=about.URL['github'],
+    author='Kartik Prabhu',
+    author_email='me@kartikprabhu.com',
+    url='https://github.com/kartikprabhu/hfeed2atom',
     license=license,
     packages=find_packages(exclude=('tests', 'docs'))
 )
