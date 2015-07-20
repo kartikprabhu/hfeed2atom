@@ -2,7 +2,7 @@ import requests
 from bs4 import BeautifulSoup
 
 import mf2py
-from mf2util import util
+import mf2util
 
 
 
@@ -56,7 +56,7 @@ def feed_parser(doc=None, url=None):
 		if isinstance(content, dict):
 			content = content.get('value')
 
-	if not name or not util.is_name_a_title(name, content):
+	if not name or not mf2util.util.is_name_a_title(name, content):
 		feed_title = doc.find('title')
 		if feed_title:
 			hfeed['properties']['name'] = [feed_title.get_text()]

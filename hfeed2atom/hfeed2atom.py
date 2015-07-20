@@ -3,7 +3,7 @@ from string import Template
 
 from . import about, feed_parser
 
-from mf2util import util
+import mf2util
 
 GENERATOR = Template('<generator uri="${uri}" version="${version}">${name}</generator>').substitute(uri = about.URL['self'], version = '.'.join(map(str, about.VERSION[0:3])) + ''.join(about.VERSION[3:]), name = about.NAME )
 
@@ -110,7 +110,7 @@ def hentry2atom(entry_mf):
 			content = content.get('value')
 
 	if name:
-		if not util.is_name_a_title(name, content):
+		if not mf2util.util.is_name_a_title(name, content):
 			name = name[:50] + '...'
 
 		entry['title'] = TITLE_TEMPLATE.substitute(title = escape(name), t_type='title')
