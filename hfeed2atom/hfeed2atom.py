@@ -1,37 +1,8 @@
 from xml.sax.saxutils import escape
-from string import Template
 
-from . import about, feed_parser
+from . import templates, feed_parser
 
 import mf2util
-
-GENERATOR = Template('<generator uri="${uri}" version="${version}">${name}</generator>').substitute(uri = about.URL['self'], version = '.'.join(map(str, about.VERSION[0:3])) + ''.join(about.VERSION[3:]), name = about.NAME )
-
-TITLE_TEMPLATE = Template('<${t_type}>${title}</${t_type}>')
-
-LINK_TEMPLATE = Template('<link href="${url}" rel="${rel}"></link>')
-
-DATE_TEMPLATE = Template('<${dt_type}>${date}</${dt_type}>')
-
-ID_TEMPLATE = Template('<id>${uid}</id>')
-
-AUTHOR_TEMPLATE = Template('<author><name>${name}</name></author>')
-
-FEATURED_TEMPLATE = Template('&lt;img src="${featured}"/&gt;')
-
-POST_SUMMARY_TEMPLATE = Template('&lt;p&gt;${post_summary}&lt;/p&gt;')
-
-MORELINK_TEMPLATE = Template('&lt;span&gt;Full article: &lt;a href="${url}"&gt;${name}&lt;/a&gt;&lt;/span&gt;')
-
-SUMMARY_TEMPLATE = Template('<summary type="html">${featured}${summary}${morelink}</summary>')
-
-CONTENT_TEMPLATE = Template('<content type="html">${content}</content>')
-
-CATEGORY_TEMPLATE = Template('<category term="${category}"></category>')
-
-ENTRY_TEMPLATE = Template('<entry>${title}${subtitle}${link}${uid}${published}${updated}${summary}${content}${categories}</entry>')
-
-FEED_TEMPLATE = Template('<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en-us">${generator}${title}${subtitle}${link}${uid}${updated}${author}${entries}</feed>')
 
 def _updated_or_published(mf):
 	"""
@@ -110,20 +81,21 @@ def hentry2atom(entry_mf):
 			content = content.get('value')
 
 	if name:
+		# if name is generated from content truncate
 		if not mf2util.util.is_name_a_title(name, content):
-			name = name[:50] + '...'
-
-		entry['title'] = TITLE_TEMPLATE.substitute(title = escape(name), t_type='title')
-
+			if len(name) > 50:
+				name = name[:50] + '...'
 	else:
-		return None, 'title for entry not found'
+		name = ''
+
+	entry['title'] = templates.TITLE.substitute(title = escape(name), t_type='title')
 
 	# construct id of entry
 	uid = _get_id(entry_mf)
 
 	if uid:
 		# construct id of entry -- required
-		entry['uid'] = ID_TEMPLATE.substitute(uid = escape(uid))
+		entry['uid'] = templates.ID.substitute(uid = escape(uid))
 	else:
 		return None, 'entry does not have a valid id'
 
@@ -132,21 +104,21 @@ def hentry2atom(entry_mf):
 
 	# updated is  -- required
 	if updated:
-		entry['updated'] = DATE_TEMPLATE.substitute(date = escape(updated), dt_type = 'updated')
+		entry['updated'] = templates.DATE.substitute(date = escape(updated), dt_type = 'updated')
 	else:
 		return None, 'entry does not have valid updated date'
 
 	## optional properties
 
-	entry['link'] = LINK_TEMPLATE.substitute(url = escape(uid), rel='alternate')
+	entry['link'] = templates.LINK.substitute(url = escape(uid), rel='alternate')
 
 	# construct published date of entry
 	if 'published' in props:
-		entry['published'] = DATE_TEMPLATE.substitute(date = escape(props['published'][0]), dt_type = 'published')
+		entry['published'] = templates.DATE.substitute(date = escape(props['published'][0]), dt_type = 'published')
 
 	# construct subtitle for feed
 	if 'additional-name' in props:
-		feed['subtitle'] = TITLE_TEMPLATE.substitute(title = escape(props['additional-name'][0]), t_type='subtitle')
+		feed['subtitle'] = templates.TITLE.substitute(title = escape(props['additional-name'][0]), t_type='subtitle')
 
 	# content processing
 	if 'content' in props:
@@ -158,26 +130,26 @@ def hentry2atom(entry_mf):
 		content = None
 
 	if content:
-		entry['content'] = CONTENT_TEMPLATE.substitute(content = escape(content))
+		entry['content'] = templates.CONTENT.substitute(content = escape(content))
 
 	# construct summary of entry
 	if 'featured' in props:
-		featured = FEATURED_TEMPLATE.substitute(featured = escape(props['featured'][0]))
+		featured = templates.FEATURED.substitute(featured = escape(props['featured'][0]))
 	else:
 		featured = ''
 
 	if 'summary' in props:
-		summary = POST_SUMMARY_TEMPLATE.substitute(post_summary = escape(props['summary'][0]))
+		summary = templates.POST_SUMMARY.substitute(post_summary = escape(props['summary'][0]))
 	else:
 		summary = ''
 
 	# make morelink if content does not exist
 	if not content:
-		morelink =  MORELINK_TEMPLATE.substitute(url = escape(uid), name = escape(name))
+		morelink =  templates.MORELINK.substitute(url = escape(uid), name = escape(name))
 	else:
 		morelink = ''
 
-	entry['summary'] = SUMMARY_TEMPLATE.substitute(featured=featured, summary=summary, morelink=morelink)
+	entry['summary'] = templates.SUMMARY.substitute(featured=featured, summary=summary, morelink=morelink)
 
 	# construct category list of entry
 	if 'category' in props:
@@ -188,10 +160,10 @@ def hentry2atom(entry_mf):
 				else:
 					continue
 
-			entry['categories'] += CATEGORY_TEMPLATE.substitute(category=escape(category))
+			entry['categories'] += templates.CATEGORY.substitute(category=escape(category))
 
 	# construct atom of entry
-	return ENTRY_TEMPLATE.substitute(entry), 'up and Atom!'
+	return templates.ENTRY.substitute(entry), 'up and Atom!'
 
 
 def hfeed2atom(doc=None, url=None, hfeed=None):
@@ -226,7 +198,7 @@ def hfeed2atom(doc=None, url=None, hfeed=None):
 
 	#construct title for feed -- required
 	if 'name' in props:
-		feed['title'] = TITLE_TEMPLATE.substitute(title = escape(props['name'][0]), t_type='title')
+		feed['title'] = templates.TITLE.substitute(title = escape(props['name'][0]), t_type='title')
 	else:
 		return None, 'title for feed not found'
 
@@ -235,7 +207,7 @@ def hfeed2atom(doc=None, url=None, hfeed=None):
 	# id is -- required
 	if uid:
 		# construct id of feed -- required
-		feed['uid'] = ID_TEMPLATE.substitute(uid = escape(uid))
+		feed['uid'] = templates.ID.substitute(uid = escape(uid))
 	else:
 		return None, 'feed does not have a valid id'
 
@@ -253,7 +225,7 @@ def hfeed2atom(doc=None, url=None, hfeed=None):
 
 	# updated is  -- required
 	if updated:
-		feed['updated'] = DATE_TEMPLATE.substitute(date = escape(updated), dt_type = 'updated')
+		feed['updated'] = templates.DATE.substitute(date = escape(updated), dt_type = 'updated')
 	else:
 		return None, 'updated date for feed not found, and could not be constructed from entries.'
 
@@ -261,13 +233,13 @@ def hfeed2atom(doc=None, url=None, hfeed=None):
 
 	# construct subtitle for feed
 	if 'additional-name' in props:
-		feed['subtitle'] = TITLE_TEMPLATE.substitute(title = escape(props['additional-name'][0]), t_type='subtitle')
+		feed['subtitle'] = templates.TITLE.substitute(title = escape(props['additional-name'][0]), t_type='subtitle')
 
-	feed['link'] = LINK_TEMPLATE.substitute(url = escape(uid), rel='alternate')
+	feed['link'] = templates.LINK.substitute(url = escape(uid), rel='alternate')
 
 	# construct author for feed
 	if 'author' in props:
-		author = AUTHOR_TEMPLATE.substitute(name = escape(props['author'][0]['properties']['name'][0]))
+		author = templates.AUTHOR.substitute(name = escape(props['author'][0]['properties']['name'][0]))
 
 	# construct entries for feed
 	for entry in entries:
@@ -276,6 +248,6 @@ def hfeed2atom(doc=None, url=None, hfeed=None):
 		if entry_atom:
 			feed['entries'] += entry_atom
 
-	feed['generator'] = GENERATOR
+	feed['generator'] = templates.GENERATOR
 
-	return FEED_TEMPLATE.substitute(feed), 'up and Atom!'
+	return templates.FEED.substitute(feed), 'up and Atom!'

@@ -4,7 +4,7 @@ NAME = 'hfeed2atom'
 
 SUMMARY = 'Converter from h-feed microformats to Atom 1.0'
 
-VERSION = (0, 2, 0, "")
+VERSION = (0, 2, 1, "")
 
 AUTHOR = {'name' : 'Kartik Prabhu', 'contact' : 'me@kartikprabhu.com'}
 
