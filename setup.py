@@ -15,7 +15,7 @@ with open('LICENSE') as f:
 
 setup(
     name='hfeed2atom',
-    version='0.2.1',
+    version='0.2.2',
     description='Converter from h-feed microformats to Atom 1.0',
     long_description=readme,
     install_requires=required,

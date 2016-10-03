@@ -82,7 +82,7 @@ def hentry2atom(entry_mf):
 
 	if name:
 		# if name is generated from content truncate
-		if not mf2util.util.is_name_a_title(name, content):
+		if not mf2util.is_name_a_title(name, content):
 			if len(name) > 50:
 				name = name[:50] + '...'
 	else:
