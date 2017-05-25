@@ -1,7 +1,7 @@
 from string import Template
-from . import about
+from . import __about__
 
-GENERATOR = Template("""<generator uri="${uri}" version="${version}">${name}</generator>""").substitute(uri = about.URL['self'], version = '.'.join(map(str, about.VERSION[0:3])) + ''.join(about.VERSION[3:]), name = about.NAME )
+GENERATOR = Template("""<generator uri="${uri}" version="${version}">${name}</generator>""").substitute(uri = __about__.URL['self'], version = '.'.join(map(str, __about__.VERSION[0:3])) + ''.join(__about__.VERSION[3:]), name = __about__.NAME )
 
 TITLE = Template("""<${t_type}>${title}</${t_type}>""")
 
