@@ -235,7 +235,7 @@ def hfeed2atom(doc=None, url=None, hfeed=None):
 	if 'name' in props:
 		name = props['name'][0] or uid
 
-	feed['title'] = templates.TITLE.substitute(title = escape(uid), t_type='title')
+	feed['title'] = templates.TITLE.substitute(title = escape(name), t_type='title')
 
 	# entries
 	if 'children' in mf:
