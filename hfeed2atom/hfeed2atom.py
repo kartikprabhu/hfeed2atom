@@ -34,7 +34,6 @@ def _get_id(mf, url=None):
 		url: optional URL to use in case no uid or url in mf
 
 	Return: string containing the id or None
-
 	"""
 
 	props =  mf['properties']
@@ -46,6 +45,33 @@ def _get_id(mf, url=None):
 	else:
 		return None
 
+def _response_context(mf):
+	"""
+	get the response context of the mf object
+
+	Args:
+		mf: python dictionary of some microformats object
+
+	Return: string containing the HTML reconstruction of the response context
+	"""
+
+	props = mf['properties']
+
+	# get replies
+	responses = props.get('in-reply-to')
+	if responses:
+		response_type = 'in reply to'
+		for response in responses:
+			response = response[0]
+			if isinstance(response, dict):
+				# the following is not correct
+				response = response.get('url')
+
+			if response:
+				# make and return string with type and list of URLs
+				response = None
+
+	return None
 
 def hentry2atom(entry_mf):
 	"""
@@ -68,6 +94,15 @@ def hentry2atom(entry_mf):
 
 	## required properties first
 
+	# construct id of entry
+	uid = _get_id(entry_mf)
+
+	if uid:
+		# construct id of entry -- required
+		entry['uid'] = templates.ID.substitute(uid = escape(uid))
+	else:
+		return None, 'entry does not have a valid id'
+
 	# construct title of entry -- required - add default
 	# if no name or name is the content value, construct name from title or default from URL
 	name = props.get('name')
@@ -86,18 +121,9 @@ def hentry2atom(entry_mf):
 			if len(name) > 50:
 				name = name[:50] + '...'
 	else:
-		name = ''
+		name = uid
 
 	entry['title'] = templates.TITLE.substitute(title = escape(name), t_type='title')
-
-	# construct id of entry
-	uid = _get_id(entry_mf)
-
-	if uid:
-		# construct id of entry -- required
-		entry['uid'] = templates.ID.substitute(uid = escape(uid))
-	else:
-		return None, 'entry does not have a valid id'
 
 	# construct updated/published date of entry
 	updated = _updated_or_published(entry_mf)
@@ -116,7 +142,7 @@ def hentry2atom(entry_mf):
 	if 'published' in props:
 		entry['published'] = templates.DATE.substitute(date = escape(props['published'][0]), dt_type = 'published')
 
-	# construct subtitle for feed
+	# construct subtitle for entry
 	if 'additional-name' in props:
 		feed['subtitle'] = templates.TITLE.substitute(title = escape(props['additional-name'][0]), t_type='subtitle')
 
@@ -196,12 +222,6 @@ def hfeed2atom(doc=None, url=None, hfeed=None):
 
 	## required properties first
 
-	#construct title for feed -- required
-	if 'name' in props:
-		feed['title'] = templates.TITLE.substitute(title = escape(props['name'][0]), t_type='title')
-	else:
-		return None, 'title for feed not found'
-
 	uid = _get_id(mf) or url
 
 	# id is -- required
@@ -210,6 +230,12 @@ def hfeed2atom(doc=None, url=None, hfeed=None):
 		feed['uid'] = templates.ID.substitute(uid = escape(uid))
 	else:
 		return None, 'feed does not have a valid id'
+
+	#construct title for feed -- required
+	if 'name' in props:
+		name = props['name'][0] or uid
+
+	feed['title'] = templates.TITLE.substitute(title = escape(uid), t_type='title')
 
 	# entries
 	if 'children' in mf:
