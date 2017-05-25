@@ -6,12 +6,11 @@ Convert h-feed pages to Atom 1.0 XML format for traditional feed readers. You ca
 Installation
 ------------
 
-To install hfeed2atom you'd need to clone this repository through git and install its dependencies using the following commands:
+To install hfeed2atom use pip as follows:
 
 ```
-git clone https://github.com/kartikprabhu/hfeed2atom.git
-cd hfeed2atom
-pip install -r requirements.txt
+pip install git+https://github.com/kartikprabhu/hfeed2atom.git
+
 ```
 
 This will install hfeed2atom with its dependencies from pypi.
@@ -57,14 +56,14 @@ Features
 
 * Finds first h-feed element to generate Atom feed, if no h-feed found defaults to using the top-level h-entries for the feed.
 * Generates fallbacks for required Atom properties of the feed. The fallbacks, in order, are:
-  - title : h-feed name property else, `<title>` element of the page else, `Feed for URL`.
-  - id : h-feed uid or url property else, URL argument given.
-  - updated date : h-feed updated or published property else, updated or published property of the latest entry.
+  - title : h-feed `name` property else, `<title>` element of the page else, `Feed for URL`.
+  - id : h-feed `uid` or `url` property else, URL argument given.
+  - updated date : h-feed `updated` or `published` property else, `updated` or `published` property of the latest entry.
 * Generates fallback categories for the h-feed from the `meta name='keywords'>` element of the page.
 * Generates fallback for required Atom properties of each entry in the h-feed. The fallbacks, in order, are:
-  - title : h-entry name property if it is not same as content>value else, name property truncated to 50 characters.
-  - id : h-entry uid property or url property else, error and skips that entry.
-  - updated date : h-entry updated or published property else, error and skips that entry.
+  - title : h-entry `name` property if it is not same as `content>value` else, `content` property truncated to 50 characters else, `uid` or `url` of the entry.
+  - id : h-entry `uid` property or `url` property else, error and skips that entry.
+  - updated date : h-entry `updated` or `published` property else, error and skips that entry.
 
 To Do
 -----
