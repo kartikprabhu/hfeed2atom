@@ -9,19 +9,20 @@ Installation
 To install hfeed2atom use pip as follows:
 
 ```
-pip install git+https://github.com/kartikprabhu/hfeed2atom.git
+pip install git+https://github.com/kartikprabhu/hfeed2atom.git --process-dependency-links
 
 ```
 
-This will install hfeed2atom with its dependencies from pypi.
+This will install hfeed2atom with its dependencies from pypi and mf2py from the experimental repo https://github.com/kartikprabhu/mf2py/tree/experimental.
 
 Usage
 -----
 
 hfeed2atom takes as arguments one or more of the following:
-* `doc` : a string, a Python File object or a BeautifulSoup document containing the contents of an HTML page
-* `url` : the URL for the page to be parsed. It is recommended to always send a URL argument as it is used to convert all other URLs in the document to absolute URLs.
-* `hfeed` : a Python dictionary of the microformats h-feed object. Use this if the document has already been parsed for microformats.
+* `doc`: a string, a Python File object or a BeautifulSoup document containing the contents of an HTML page
+* `url`: the URL for the page to be parsed. It is recommended to always send a URL argument as it is used to convert all other URLs in the document to absolute URLs.
+* `atom_url`: the URL of the page with the ATOM file.
+* `hfeed`: a Python dictionary of the microformats h-feed object. Use this if the document has already been parsed for microformats.
  
 hfeed2atom returns the following as a tuple:
 * Atom format of the h-feed, or None if there was an error.

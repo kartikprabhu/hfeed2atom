@@ -1,5 +1,5 @@
-mf2py==1.0.5
-requests==2.11.1
-BeautifulSoup4==4.5.1
+mf2py==1.1.1
+requests==2.18.4
+BeautifulSoup4==4.6.0
 
 mf2util==0.4.3

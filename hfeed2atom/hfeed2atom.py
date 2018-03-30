@@ -192,7 +192,7 @@ def hentry2atom(entry_mf):
 	return templates.ENTRY.substitute(entry), 'up and Atom!'
 
 
-def hfeed2atom(doc=None, url=None, hfeed=None):
+def hfeed2atom(doc=None, url=None, atom_url=None, hfeed=None):
 	"""
 	convert first h-feed object in a document to Atom 1.0
 
@@ -262,6 +262,7 @@ def hfeed2atom(doc=None, url=None, hfeed=None):
 		feed['subtitle'] = templates.TITLE.substitute(title = escape(props['additional-name'][0]), t_type='subtitle')
 
 	feed['link'] = templates.LINK.substitute(url = escape(uid), rel='alternate')
+	feed['self'] = templates.LINK.substitute(url = escape(atom_url), rel='self')
 
 	# construct author for feed
 	if 'author' in props:

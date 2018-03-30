@@ -17,7 +17,7 @@ FEATURED = Template("""&lt;img src="${featured}"/&gt;""")
 
 POST_SUMMARY = Template("""&lt;p&gt;${post_summary}&lt;/p&gt;""")
 
-MORELINK = Template("""&lt;span&gt;Full article: &lt;a href="${url}"&gt;${name}&lt;/a&gt;&lt;/span&gt;""")
+MORELINK = Template("""&lt;span&gt;Full post: &lt;a href="${url}"&gt;${name}&lt;/a&gt;&lt;/span&gt;""")
 
 SUMMARY = Template("""<summary type="html">${featured}${summary}${morelink}</summary>""")
 
@@ -28,5 +28,5 @@ CATEGORY = Template("""<category term="${category}"></category>""")
 ENTRY = Template("""<entry>${title}${subtitle}${link}${uid}${published}${updated}${summary}${content}
 ${categories}</entry>""")
 
-FEED = Template("""<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en-us">${generator}${title}${subtitle}${link}${uid}${updated}${author}${entries}</feed>""")
+FEED = Template("""<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en-us">${generator}${title}${subtitle}${link}${self}${uid}${updated}${author}${entries}</feed>""")
 
