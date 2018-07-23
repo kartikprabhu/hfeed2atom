@@ -25,11 +25,6 @@ def feed_parser(doc=None, url=None):
             else:
                 doc = BeautifulSoup(data.content)
 
-    # HACK: drop all <svg> elements until mf2py is fixed
-    uses = doc.find_all("svg")
-    for use in uses:
-        use.decompose()
-
     # find first h-feed object if any or construct it
 
     hfeed = doc.find(class_="h-feed")
